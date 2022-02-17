@@ -19,9 +19,7 @@ let locationError = (error)=>{
 let getDataByCoords = async(lat,lon) =>{
     await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=df7b1130b51853c79a3c341a962c6461&units=metric`)
     .then(async(result)=>{
-        console.log(result);
         const response = await result.json();
-        console.log(response)
         useData(response)
     })
     .catch((err)=>{
@@ -29,25 +27,37 @@ let getDataByCoords = async(lat,lon) =>{
     })
 }
 
-let useData = (data_jason) =>{
+let useData = (data_json) =>{
+    // remove all img children
+    let source = document.getElementById("weatherIcon");
+    let child = source.firstChild;
+    while(child)
+    {
+        source.removeChild(child);
+        child = source.firstChild;
+    }
+
+
     // load weather icon into html file with css
     let weather_img = document.createElement("img")
-    weather_img.src = `https://openweathermap.org/img/wn/${data_jason.weather[0].icon}@2x.png`
+    weather_img.src = `https://openweathermap.org/img/wn/${data_json.weather[0].icon}@2x.png`
     weather_img.className = "weatherIcon";   
     document.getElementById("weatherIcon").appendChild(weather_img);
 
-    // load cloud info to html file
-    document.getElementById("weatherCondition").innerHTML = data_jason.weather[0].description;    
+    // update <img> new child
+    source.appendChild(weather_img);
 
+    // load cloud info to html file
+    document.getElementById("weatherCondition").innerHTML = data_json.weather[0].description;    
 
     // load tempeture into html file
-    document.getElementById("temperature").innerHTML = Math.round(data_jason.main.temp) + `\u00B0`;
+    document.getElementById("temperature").innerHTML = Math.round(data_json.main.temp) + `\u00B0`;
 
     // load place into html file
-    document.getElementById("place").innerHTML = "City: " + data_jason.name;
+    document.getElementById("place").innerHTML = "City: " + data_json.name;
 
     // load current time to html file
-    showTime(data_jason.timezone)
+    showTime(data_json.timezone)
 
     
 }
